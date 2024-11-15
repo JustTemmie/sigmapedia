@@ -27,6 +27,6 @@
         "webRequest",
         "storage",
         "unlimitedStorage",
-        "github.com"
+        "<all_urls>"
     ]
 }
