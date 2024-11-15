@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+    "name": "Gen-Z Wikipedia",
+    "version": "1.0",
+    "description": "Skibidi Gyat",
+
+    "icons": {
+        "48": "icons/48.png",
+        "64": "icons/64.png",
+        "128": "icons/128.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://*.wikipedia.org/*"],
+            "js": ["index.js"]
+        }
+    ],
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "gen-z-wikipedia@JustTemmie.dev"
+        }
+    },
+
+    "permissions": [
+        "webRequest",
+        "storage",
+        "unlimitedStorage",
+        "github.com"
+    ]
+}
