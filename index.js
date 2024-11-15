@@ -58,12 +58,12 @@ async function moveArticle() {
         // console.log(checkIfNullOrReady(video_player_left), checkIfNullOrReady(video_player_right))
         if (checkIfNullOrReady(video_player_left) && checkIfNullOrReady(video_player_right)) {
             console.log("content has finished loading, resizing article!")
-            article.style.cssText = `
+            article.style.cssText +=`
                 margin-left: ${getPlayerWidth(video_player_left)}px !important;
                 margin-right: ${getPlayerWidth(video_player_right)}px !important;
                 top: 0;
-                position: fixed;
             `
+
             return
         }
     }
@@ -107,21 +107,26 @@ function injectVideoPlayer(position, video_URL, audio_enabled) {
     video.autoplay = true
     video.controls = false
     video.id = `brain-rot-video-${position}`
+
+    video.addEventListener('loadedmetadata', function() {
+        video.currentTime = Math.random() * video.duration;
+        moveArticle()
+    });
+    
     document.body.appendChild(video)
+
 }
 
 async function setupVideo(position, video_ID, audio_enabled) {
     const video_URL = videos[video_ID]
     const db = await openDB();
 
-    console.log(`is ${video_ID} downloading? - ${await isCacheDownloading(db, video_ID)}`)
     if (await isCacheDownloading(db, video_ID)) {
         let toast_ID = getRandomID()
         createToast(toast_ID, `a background tab seems to be already downloading the ${video_ID} video\nthe video will be streamed on this page in the mean-time`)
         removeToast(toast_ID, 5000)
 
         injectVideoPlayer(position, video_URL, audio_enabled);
-        await moveArticle()
 
         return
     }
@@ -130,7 +135,6 @@ async function setupVideo(position, video_ID, audio_enabled) {
     if (cachedBlob) {
         console.log(`cached video exists for ${video_ID}`);
         injectVideoPlayer(position, URL.createObjectURL(cachedBlob), audio_enabled);
-        await moveArticle()
     } else {
         try {
             console.log(`fetching and caching video ${video_ID} video`);
@@ -160,8 +164,6 @@ async function setupVideo(position, video_ID, audio_enabled) {
             console.log(`failed to cache the ${video_ID} video, deciding to stream it instead...`)
             injectVideoPlayer(position, video_URL, audio_enabled);
         }
-        
-        await moveArticle()
     }
 }
 
@@ -212,11 +214,11 @@ async function isCacheDownloading(db, ID) {
             const data = request.result
             if (data && data.timestamp) {
                 // if the video started downloading over 5 minutes ago it probably got interrupted
-                if (Date.now() - data.timestamp > 300000) {
-                    console.log(Date.now() - data.timestamp)
-                    resolve(false)
-                } else {
+                if (Date.now() - data.timestamp < 300000) {
+                    console.log(`started downloading the video ${(Date.now() - data.timestamp) / 1000} seconds ago`)
                     resolve(true)
+                } else {
+                    resolve(false)
                 }
             }
 
@@ -343,8 +345,6 @@ function createToast(ID, message) {
     toast.textContent = message;
     
     toastContainer.appendChild(toast);
-
-
 }
 
 function updateToast(ID, message) {
