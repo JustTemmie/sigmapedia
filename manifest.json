@@ -1,12 +1,13 @@
 {
     "manifest_version": 2,
-    "name": "Gen-Z Wikipedia",
+    "name": "Sigmapedia",
+    "description": "Wikipedia for those with a severe attention deficit",
     "version": "1.0",
-    "description": "Skibidi Gyat",
 
     "icons": {
         "48": "icons/48.png",
         "64": "icons/64.png",
+        "96": "icons/96.png",
         "128": "icons/128.png"
     },
 
@@ -19,7 +20,7 @@
 
     "browser_specific_settings": {
         "gecko": {
-            "id": "gen-z-wikipedia@JustTemmie.dev"
+            "id": "sigmapedia@JustTemmie.non-existant-email"
         }
     },
 
